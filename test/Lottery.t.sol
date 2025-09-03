@@ -17,7 +17,11 @@ contract LotteryTest is Test {
     uint256 threshold = 2;
 
     function setUp() public {
-        lottery = new Lottery(initialTicketPrice, initialWinningPool, threshold);
+        lottery = new Lottery(
+            initialTicketPrice,
+            initialWinningPool,
+            threshold
+        );
         // deal some ETH to test users
         vm.deal(alice, 10 ether);
         vm.deal(bob, 10 ether);
@@ -28,14 +32,20 @@ contract LotteryTest is Test {
         assertEq(lottery.playerThreshold(), threshold);
         assertEq(lottery.currentWinningPool(), initialWinningPool);
         // ticketPrice = initial + 20%
-        assertEq(lottery.ticketPrice(), initialTicketPrice + (initialTicketPrice * 20) / 100);
+        assertEq(
+            lottery.ticketPrice(),
+            initialTicketPrice + (initialTicketPrice * 20) / 100
+        );
     }
 
     function testBuyTicketEmitsEventAndAddsPlayer() public {
-        vm.prank(alice);
+        // prank must cover the state-changing call, not the preceding view read
+        vm.startPrank(alice);
+        uint256 price = lottery.ticketPrice();
         vm.expectEmit(true, false, false, true);
-        emit Lottery.TicketBought(alice, lottery.lotteryId(), lottery.ticketPrice());
-        lottery.buyTicket{value: lottery.ticketPrice()}();
+        emit Lottery.TicketBought(alice, lottery.lotteryId(), price);
+        lottery.buyTicket{value: price}();
+        vm.stopPrank();
 
         assertEq(lottery.getPlayersCount(), 1);
     }
@@ -47,12 +57,17 @@ contract LotteryTest is Test {
     }
 
     function testThresholdTriggersWinnerAndResets() public {
-        // First buy
-        vm.prank(alice);
-        lottery.buyTicket{value: lottery.ticketPrice()}();
+        // First buy (cache price inside prank scope)
+        vm.startPrank(alice);
+        uint256 priceA = lottery.ticketPrice();
+        lottery.buyTicket{value: priceA}();
+        vm.stopPrank();
+
         // Second buy triggers draw
-        vm.prank(bob);
-        lottery.buyTicket{value: lottery.ticketPrice()}();
+        vm.startPrank(bob);
+        uint256 priceB = lottery.ticketPrice();
+        lottery.buyTicket{value: priceB}();
+        vm.stopPrank();
 
         // After draw, players reset and lotteryId increments
         assertEq(lottery.getPlayersCount(), 0);
