@@ -1,4 +1,4 @@
-<!-- 🎟️ Lottery Smart Contract (Foundry)
+🎟️ Lottery Smart Contract (Foundry)
 A secure, transparent Lottery smart contract built with Foundry and Solidity. Players buy tickets with ETH; when enough tickets are sold, one winner receives the jackpot. Owner earns a percentage of each ticket sale.
 
 ✨ Features
@@ -21,7 +21,7 @@ Node.js & npm (for frontend integration)
 Ethereum wallet & Sepolia testnet ETH
 
 Installation
-Clone and install dependencies: -->
+Clone and install dependencies:
 
 git clone https://github.com/yourusername/lottery-contract-foundry.git
 cd lottery-contract-foundry
@@ -40,9 +40,9 @@ INITIAL_TICKET_PRICE_WEI=10000000000000000
 INITIAL_WINNING_POOL_WEI=5000000000000000
 PLAYER_THRESHOLD=5
 
-<!-- Deploy your contract to Sepolia: -->
+Deploy your contract to Sepolia:
 
-<!-- forge script script/DeployLottery.s.sol:DeployLottery --rpc-url $SEPOLIA_RPC_URL --broadcast --private-key $DEPLOYER_PRIVATE_KEY
+forge script script/DeployLottery.s.sol:DeployLottery --rpc-url $SEPOLIA_RPC_URL --broadcast --private-key $DEPLOYER_PRIVATE_KEY
 
 Interacting/Verifying
 The ABI is generated at out/lottery.sol/Lottery.json for frontend use.
@@ -84,7 +84,7 @@ MIT
 
 🙋‍♂️ Contact & Support
 Raise an issue or contact vivekrawat0107@gmail.com 
--->
+
 
 
 
