@@ -30,11 +30,7 @@ contract DeployLottery is Script {
 
         vm.startBroadcast(deployerPrivateKey);
 
-        deployed = new Lottery(
-            initialTicketPriceWei,
-            initialWinningPoolWei,
-            playerThreshold
-        );
+        deployed = new Lottery(initialTicketPriceWei, initialWinningPoolWei, playerThreshold);
 
         vm.stopBroadcast();
     }

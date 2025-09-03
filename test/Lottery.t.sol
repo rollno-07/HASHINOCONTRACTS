@@ -17,11 +17,7 @@ contract LotteryTest is Test {
     uint256 threshold = 2;
 
     function setUp() public {
-        lottery = new Lottery(
-            initialTicketPrice,
-            initialWinningPool,
-            threshold
-        );
+        lottery = new Lottery(initialTicketPrice, initialWinningPool, threshold);
         // deal some ETH to test users
         vm.deal(alice, 10 ether);
         vm.deal(bob, 10 ether);
@@ -32,20 +28,13 @@ contract LotteryTest is Test {
         assertEq(lottery.playerThreshold(), threshold);
         assertEq(lottery.currentWinningPool(), initialWinningPool);
         // ticketPrice = initial + 20%
-        assertEq(
-            lottery.ticketPrice(),
-            initialTicketPrice + (initialTicketPrice * 20) / 100
-        );
+        assertEq(lottery.ticketPrice(), initialTicketPrice + (initialTicketPrice * 20) / 100);
     }
 
     function testBuyTicketEmitsEventAndAddsPlayer() public {
         vm.prank(alice);
         vm.expectEmit(true, false, false, true);
-        emit Lottery.TicketBought(
-            alice,
-            lottery.lotteryId(),
-            lottery.ticketPrice()
-        );
+        emit Lottery.TicketBought(alice, lottery.lotteryId(), lottery.ticketPrice());
         lottery.buyTicket{value: lottery.ticketPrice()}();
 
         assertEq(lottery.getPlayersCount(), 1);

@@ -18,40 +18,24 @@ contract Lottery is Ownable {
     uint256 public ownerBalance; // Tracks owner earnings from ticket sales
 
     // Events to log important actions on the blockchain
-    event TicketBought(
-        address indexed player,
-        uint256 lotteryId,
-        uint256 amount
-    );
-    event WinnerDrawn(
-        address indexed winner,
-        uint256 winningAmount,
-        uint256 lotteryId
-    );
+    event TicketBought(address indexed player, uint256 lotteryId, uint256 amount);
+    event WinnerDrawn(address indexed winner, uint256 winningAmount, uint256 lotteryId);
     event LotteryReset(uint256 newLotteryId);
     event OwnerWithdraw(uint256 amount);
 
     // The constructor sets the initial parameters of the lottery.
-    constructor(
-        uint256 _initialTicketPrice,
-        uint256 _initialWinningPool,
-        uint256 _playerThreshold
-    ) Ownable(msg.sender) {
+    constructor(uint256 _initialTicketPrice, uint256 _initialWinningPool, uint256 _playerThreshold)
+        Ownable(msg.sender)
+    {
         require(_initialTicketPrice > 0, "Ticket price must be greater than 0");
-        require(
-            _playerThreshold > 0,
-            "Player threshold must be greater than 0"
-        );
+        require(_playerThreshold > 0, "Player threshold must be greater than 0");
 
         initialTicketPrice = _initialTicketPrice;
         playerThreshold = _playerThreshold;
         currentWinningPool = _initialWinningPool;
 
         // The ticket price is the initial price + 20% for the jackpot.
-        ticketPrice =
-            initialTicketPrice +
-            (initialTicketPrice * JACKPOT_CUT_PERCENTAGE) /
-            100;
+        ticketPrice = initialTicketPrice + (initialTicketPrice * JACKPOT_CUT_PERCENTAGE) / 100;
     }
 
     // Function for players to buy a ticket.
@@ -98,16 +82,8 @@ contract Lottery is Ownable {
     function _drawWinner() private {
         // Use a pseudo-random number generator to select a winner.
         // NOTE: For production, use a secure randomness source like Chainlink VRF.
-        uint256 randomNumber = uint256(
-            keccak256(
-                abi.encodePacked(
-                    block.timestamp,
-                    block.prevrandao,
-                    players.length,
-                    lotteryId
-                )
-            )
-        );
+        uint256 randomNumber =
+            uint256(keccak256(abi.encodePacked(block.timestamp, block.prevrandao, players.length, lotteryId)));
         uint256 winnerIndex = randomNumber % players.length;
 
         winner = players[winnerIndex];
@@ -127,10 +103,7 @@ contract Lottery is Ownable {
     // Private function to reset all state variables for a new round.
     function _resetLottery() private {
         players = new address[](0);
-        currentWinningPool =
-            initialTicketPrice +
-            (initialTicketPrice * JACKPOT_CUT_PERCENTAGE) /
-            100;
+        currentWinningPool = initialTicketPrice + (initialTicketPrice * JACKPOT_CUT_PERCENTAGE) / 100;
         lotteryId++;
         winner = address(0);
         emit LotteryReset(lotteryId);
